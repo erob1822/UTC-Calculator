@@ -310,6 +310,14 @@
             margin-bottom: 6px;
         }
 
+        .met-snapshot {
+            font-size: 0.95em;
+            color: #66bb6a;
+            margin-top: 4px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
         /* ── Labeled input group ── */
         .input-group {
             display: flex;
@@ -350,7 +358,7 @@
         <div class="utc-label">CURRENT UTC TIME</div>
         <div id="utcClock">00:00:00</div>
 
-        <div class="calibration-note">Calibrate UTC if system clock is inaccurate</div>
+        <div class="calibration-note">Calibrate UTC Below</div>
         <div class="calibration-row">
             <div class="input-group">
                 <select id="calHour" class="cal-input" aria-label="Hour"></select>
@@ -454,6 +462,7 @@
                 </div>
                 <button class="btn-set" id="btnNoteDryPass1">Set Current</button>
             </div>
+            <div id="metSnapDP1" class="met-snapshot"></div>
         </div>
 
         <!-- Dry Pass 2 -->
@@ -476,9 +485,8 @@
                 </div>
                 <button class="btn-set" id="btnNoteDryPass2">Set Current</button>
             </div>
+            <div id="metSnapDP2" class="met-snapshot"></div>
         </div>
-
-        <!-- Hot Pass -->
         <div class="mission-field">
             <div class="section-label">Hot Pass</div>
             <div class="time-input-row">
@@ -498,9 +506,8 @@
                 </div>
                 <button class="btn-set" id="btnNoteHotPass">Set Current</button>
             </div>
+            <div id="metSnapHP" class="met-snapshot"></div>
         </div>
-
-        <hr class="divider">
 
         <!-- MET Display -->
         <div class="result-section">
@@ -509,6 +516,8 @@
         </div>
     </div>
 </div>
+
+<script>
     // ─────────────────────────────────────────────
     //  RPL Logo – Base64 embedded for offline use
     // ─────────────────────────────────────────────
@@ -996,17 +1005,70 @@
             sEl.value = utc.getUTCSeconds();
         }
 
+        // Compute MET string for a given event time relative to mission start
+        function getMETForEvent(hEl, mEl, sEl) {
+            var msh = clamp(mStartHourEl.value, 0, 23);
+            var msm = clamp(mStartMinEl.value, 0, 59);
+            var mss = clamp(mStartSecEl.value, 0, 59);
+            var startSec = msh * 3600 + msm * 60 + mss;
+
+            var evh = clamp(hEl.value, 0, 23);
+            var evm = clamp(mEl.value, 0, 59);
+            var evs = clamp(sEl.value, 0, 59);
+            var evSec = evh * 3600 + evm * 60 + evs;
+
+            var diff = evSec - startSec;
+            if (diff > 43200) diff -= 86400;
+            if (diff < -43200) diff += 86400;
+
+            var sign = diff >= 0 ? '+' : '-';
+            var abs = Math.abs(diff);
+            var h = Math.floor(abs / 3600);
+            var m = Math.floor((abs % 3600) / 60);
+            var s = abs % 60;
+            return 'MET ' + sign + pad(h) + ':' + pad(m) + ':' + pad(s);
+        }
+
+        function updateMETSnap(hEl, mEl, sEl, snapId) {
+            var snapEl = document.getElementById(snapId);
+            snapEl.textContent = getMETForEvent(hEl, mEl, sEl);
+        }
+
         document.getElementById('btnNoteMissionStart').addEventListener('click', function () {
             noteCurrentTo(mStartHourEl, mStartMinEl, mStartSecEl);
+            // Recompute all existing snapshots when mission start changes
+            if (document.getElementById('metSnapDP1').textContent) updateMETSnap(dry1HourEl, dry1MinEl, dry1SecEl, 'metSnapDP1');
+            if (document.getElementById('metSnapDP2').textContent) updateMETSnap(dry2HourEl, dry2MinEl, dry2SecEl, 'metSnapDP2');
+            if (document.getElementById('metSnapHP').textContent) updateMETSnap(hotHourEl, hotMinEl, hotSecEl, 'metSnapHP');
         });
         document.getElementById('btnNoteDryPass1').addEventListener('click', function () {
             noteCurrentTo(dry1HourEl, dry1MinEl, dry1SecEl);
+            updateMETSnap(dry1HourEl, dry1MinEl, dry1SecEl, 'metSnapDP1');
         });
         document.getElementById('btnNoteDryPass2').addEventListener('click', function () {
             noteCurrentTo(dry2HourEl, dry2MinEl, dry2SecEl);
+            updateMETSnap(dry2HourEl, dry2MinEl, dry2SecEl, 'metSnapDP2');
         });
         document.getElementById('btnNoteHotPass').addEventListener('click', function () {
             noteCurrentTo(hotHourEl, hotMinEl, hotSecEl);
+            updateMETSnap(hotHourEl, hotMinEl, hotSecEl, 'metSnapHP');
+        });
+
+        // Also update MET snap when user manually changes a DP/HP select
+        ['dryPass1Hour','dryPass1Min','dryPass1Sec'].forEach(function(id) {
+            document.getElementById(id).addEventListener('change', function () {
+                updateMETSnap(dry1HourEl, dry1MinEl, dry1SecEl, 'metSnapDP1');
+            });
+        });
+        ['dryPass2Hour','dryPass2Min','dryPass2Sec'].forEach(function(id) {
+            document.getElementById(id).addEventListener('change', function () {
+                updateMETSnap(dry2HourEl, dry2MinEl, dry2SecEl, 'metSnapDP2');
+            });
+        });
+        ['hotPassHour','hotPassMin','hotPassSec'].forEach(function(id) {
+            document.getElementById(id).addEventListener('change', function () {
+                updateMETSnap(hotHourEl, hotMinEl, hotSecEl, 'metSnapHP');
+            });
         });
 
         // ─── MET Computation (live every second) ───

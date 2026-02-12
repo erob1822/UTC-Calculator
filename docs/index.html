@@ -441,7 +441,7 @@
                     <select id="missionStartSec" class="time-input" aria-label="Mission Start Second"></select>
                     <span class="input-label">Sec</span>
                 </div>
-                <button class="btn-set" id="btnNoteMissionStart">Set Current</button>
+                <button class="btn-set" id="btnNoteMissionStart">Note Current</button>
             </div>
         </div>
 
@@ -463,7 +463,7 @@
                     <select id="dryPass1Sec" class="time-input" aria-label="Dry Pass 1 Second"></select>
                     <span class="input-label">Sec</span>
                 </div>
-                <button class="btn-set" id="btnNoteDryPass1">Set Current</button>
+                <button class="btn-set" id="btnNoteDryPass1">Note Current</button>
             </div>
             <div id="metSnapDP1" class="met-snapshot"></div>
         </div>
@@ -486,7 +486,7 @@
                     <select id="dryPass2Sec" class="time-input" aria-label="Dry Pass 2 Second"></select>
                     <span class="input-label">Sec</span>
                 </div>
-                <button class="btn-set" id="btnNoteDryPass2">Set Current</button>
+                <button class="btn-set" id="btnNoteDryPass2">Note Current</button>
             </div>
             <div id="metSnapDP2" class="met-snapshot"></div>
         </div>
@@ -507,7 +507,7 @@
                     <select id="hotPassSec" class="time-input" aria-label="Hot Pass Second"></select>
                     <span class="input-label">Sec</span>
                 </div>
-                <button class="btn-set" id="btnNoteHotPass">Set Current</button>
+                <button class="btn-set" id="btnNoteHotPass">Note Current</button>
             </div>
             <div id="metSnapHP" class="met-snapshot"></div>
         </div>
@@ -1039,7 +1039,17 @@
             snapEl.textContent = getMETForEvent(hEl, mEl, sEl);
         }
 
+        var missionStartSet = false;
+
+        // Mark mission start as set when user changes any mission start select
+        ['missionStartHour','missionStartMin','missionStartSec'].forEach(function(id) {
+            document.getElementById(id).addEventListener('change', function () {
+                missionStartSet = true;
+            });
+        });
+
         document.getElementById('btnNoteMissionStart').addEventListener('click', function () {
+            missionStartSet = true;
             noteCurrentTo(mStartHourEl, mStartMinEl, mStartSecEl);
             // Recompute all existing snapshots when mission start changes
             if (document.getElementById('metSnapDP1').textContent) updateMETSnap(dry1HourEl, dry1MinEl, dry1SecEl, 'metSnapDP1');
@@ -1078,6 +1088,10 @@
 
         // ─── MET Computation (live every second) ───
         function computeMET() {
+            if (!missionStartSet) {
+                metDisplayEl.textContent = '+00:00:00';
+                return;
+            }
             var utc = getCalibratedUTC();
             var nowSec = utc.getUTCHours() * 3600 + utc.getUTCMinutes() * 60 + utc.getUTCSeconds();
             var msh = clamp(mStartHourEl.value, 0, 23);

@@ -493,43 +493,6 @@
         </div>
     </div>
 
-    <!-- ═══════ Calculator Body ═══════ -->
-    <div class="calc-section">
-        <div class="header-title" style="text-align:center; margin-bottom:12px;">UTC Calculator</div>
-        <!-- Starting UTC Time -->
-        <div class="section-label">Starting UTC Time</div>
-        <div class="time-input-row">
-            <div class="input-group">
-                <select id="startHour" class="time-input" aria-label="Start Hour"></select>
-                <span class="input-label">Hours</span>
-            </div>
-            <span class="time-sep">:</span>
-            <div class="input-group">
-                <select id="startMin" class="time-input" aria-label="Start Minute"></select>
-                <span class="input-label">Min</span>
-            </div>
-            <span class="time-sep">:</span>
-            <div class="input-group">
-                <select id="startSec" class="time-input" aria-label="Start Second"></select>
-                <span class="input-label">Sec</span>
-            </div>
-            <button class="btn-set" id="btnNoteCurrent">Set Current</button>
-        </div>
-
-        <!-- Modifiers -->
-        <div class="section-label" style="margin-top: 12px;">Modifiers</div>
-        <div id="modifierContainer"></div>
-        <button class="btn-add-modifier" id="btnAddModifier">+ Add Modifier</button>
-
-        <hr class="divider">
-
-        <!-- Result -->
-        <div class="result-section">
-            <div class="result-label">Resultant UTC Time</div>
-            <div id="resultTime">00:00:00</div>
-        </div>
-    </div>
-
     <!-- ═══════ Mission Timing ═══════ -->
     <div class="mission-section">
         <div class="header-title" style="text-align:center; margin-bottom:12px;">Mission Timing</div>
@@ -629,6 +592,43 @@
         <div class="result-section">
             <div class="result-label">Mission Elapsed Time (MET)</div>
             <div id="metDisplay" class="met-display">+00:00:00</div>
+        </div>
+    </div>
+
+    <!-- ═══════ Calculator Body ═══════ -->
+    <div class="calc-section">
+        <div class="header-title" style="text-align:center; margin-bottom:12px;">UTC Calculator</div>
+        <!-- Starting UTC Time -->
+        <div class="section-label">Starting UTC Time</div>
+        <div class="time-input-row">
+            <div class="input-group">
+                <select id="startHour" class="time-input" aria-label="Start Hour"></select>
+                <span class="input-label">Hours</span>
+            </div>
+            <span class="time-sep">:</span>
+            <div class="input-group">
+                <select id="startMin" class="time-input" aria-label="Start Minute"></select>
+                <span class="input-label">Min</span>
+            </div>
+            <span class="time-sep">:</span>
+            <div class="input-group">
+                <select id="startSec" class="time-input" aria-label="Start Second"></select>
+                <span class="input-label">Sec</span>
+            </div>
+            <button class="btn-set" id="btnNoteCurrent">Set Current</button>
+        </div>
+
+        <!-- Modifiers -->
+        <div class="section-label" style="margin-top: 12px;">Modifiers</div>
+        <div id="modifierContainer"></div>
+        <button class="btn-add-modifier" id="btnAddModifier">+ Add Modifier</button>
+
+        <hr class="divider">
+
+        <!-- Result -->
+        <div class="result-section">
+            <div class="result-label">Resultant UTC Time</div>
+            <div id="resultTime">00:00:00</div>
         </div>
     </div>
 </div>

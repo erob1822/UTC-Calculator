@@ -1,0 +1,11 @@
+A new customer request has come in for the clock.html app. Because of how different this app will be, we will be putting it in a new repository called "UTC Calculator". The old code you will be referencing as a starting point is in "Reference Docs"
+
+The main file will remain largely unchanged in format: named index.html, with the RPL logo, and UTC time connection designed to be used offline
+
+The customer request is as follows:
+1. The app will be used in flight to make calculating changes to 24-hr utc time easier. At the top of the main page, the current UTC time will be displayed in large font. Just below that will be an option to calibrate this time: a Hour:Minute:Second selection with a large blue "Set" button next to it. Also include next to that a "Revert" button to make the timer go back to system time.
+2. Below the large calibration and time display section will be the body of the code. This will be a UTC time calculator. The user will input a desired 24 hour time to "begin" with (same hour:min:second format for input) and this clock will be labelled "Starting UTC time". Below will be a series of modifiers in the same hour:minute:second format but with a large + or - selector at the start. The default values for the modifier should be zero.
+3. Below the modifiers will be a "Resultant UTC Time" Display which will show the result of the starting time plus or minus the modifiers. This should update in real time as the user changes the modifiers or starting time.
+4. The app should be designed to work offline, so all necessary files and libraries should be included in the repository.
+
+The goal is to make this foolproof and easy to use even in a high stress low light environment. Easy to read text will be important, as will formatting it correctly for mobile use.

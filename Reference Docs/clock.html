@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTC & Local Clock</title>
+    <style>
+                .header {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 24px 0 12px 0;
+                    background: none;
+                }
+                #mainLogo {
+                    height: 56px;
+                    width: auto;
+                    margin: 0 0 10px 0;
+                    border-radius: 8px;
+                    box-shadow: 0 1px 4px #bbb;
+                    display: block;
+                }
+                .header-title {
+                    font-size: 2.1em;
+                    font-weight: 600;
+                    color: #222a;
+                    letter-spacing: 1px;
+                    text-align: center;
+                }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f9f9f9 100%);
+            min-height: 100vh;
+        }
+        .container { max-width: 700px; margin: auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px #ccc; }
+        label, select { font-size: 1.1em; }
+        table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; font-size: 1.1em; }
+        th { background: #f0f0f0; }
+        input[type="datetime-local"] { font-size: 1em; width: 90%; }
+        .input-row { background: #f9f9f9; }
+    </style>
+    <link id="faviconLink" rel="icon" type="image/jpeg">
+</head>
+<body>
+<div class="header">
+    <img id="mainLogo" alt="RPL Logo">
+    <div class="header-title">RPL World Clock</div>
+</div>
+<div class="container">
+    <label for="timezone">Select Timezone:</label>
+    <select id="timezone">
+        <option value="UTC">UTC</option>
+        <option value="America/New_York">America/New_York</option>
+        <option value="Europe/London">Europe/London</option>
+        <option value="Asia/Tokyo">Asia/Tokyo</option>
+        <option value="Australia/Sydney">Australia/Sydney</option>
+        <option value="Europe/Paris">Europe/Paris</option>
+        <option value="America/Los_Angeles">America/Los_Angeles</option>
+        <option value="Asia/Kolkata">Asia/Kolkata</option>
+        <option value="America/Chicago">America/Chicago</option>
+        <option value="Europe/Berlin">Europe/Berlin</option>
+    </select>
+    <table>
+        <tr>
+            <th></th>
+            <th>Current Time</th>
+            <th>Target Time<br><span style="font-weight:normal;font-size:0.9em;">(set below, 24-hour format)</span></th>
+        </tr>
+        <tr class="input-row">
+            <th>UTC</th>
+            <td id="utcClock"></td>
+            <td>
+                <input type="datetime-local" id="targetUtcInput" step="1">
+            </td>
+        </tr>
+        <tr class="input-row">
+            <th>Local</th>
+            <td id="localClock"></td>
+            <td>
+                <input type="datetime-local" id="targetLocalInput" step="1">
+            </td>
+        </tr>
+        <tr class="input-row">
+            <th colspan="2" style="text-align:right;font-weight:bold;">Time to Target:</th>
+            <td id="utcToTarget" style="font-size:1.2em;font-weight:bold;"></td>
+        </tr>
+    </table>
+</div>
+<script>
+        // Helper: Convert a wall time (yyyy-MM-ddTHH:mm:ss) in a given timezone to a UTC Date
+        function wallTimeInTimezoneToUTC(wallTimeStr, tz) {
+            // wallTimeStr: 'yyyy-MM-ddTHH:mm:ss'
+            // Strategy: Find the UTC instant that produces the desired wall time in the target timezone
+            
+            // For UTC timezone, just append 'Z' to indicate UTC
+            if (tz === 'UTC') {
+                return new Date(wallTimeStr + 'Z');
+            }
+            
+            // For other timezones, we need to find the UTC equivalent through iteration
+            const [datePart, timePart] = wallTimeStr.split('T');
+            const [year, month, day] = datePart.split('-').map(Number);
+            const timeParts = timePart.split(':').map(Number);
+            const hour = timeParts[0];
+            const minute = timeParts[1];
+            const second = timeParts[2] || 0; // Default to 0 if seconds not provided
+            
+            // Start with an initial guess: interpret wall time as UTC
+            let guessUtc = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+            
+            // Format this guess in the target timezone using formatToParts for reliable parsing
+            const dtf = new Intl.DateTimeFormat('en-US', {
+                timeZone: tz,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            
+            // Iterate to find the correct UTC time that produces the desired wall time
+            // Typically converges in 1-2 iterations for standard timezone offsets,
+            // and 3 iterations handles even complex DST transition cases
+            const MAX_ITERATIONS = 3;
+            for (let i = 0; i < MAX_ITERATIONS; i++) {
+                const parts = dtf.formatToParts(guessUtc);
+                const get = (type) => parseInt(parts.find(p => p.type === type)?.value || '0', 10);
+                
+                const wallYear = get('year');
+                const wallMonth = get('month');
+                const wallDay = get('day');
+                const wallHour = get('hour');
+                const wallMinute = get('minute');
+                const wallSecond = get('second');
+                
+                // Calculate millisecond difference between desired and actual wall time
+                // Use UTC to avoid timezone issues in the comparison itself
+                const desiredMs = Date.UTC(year, month - 1, day, hour, minute, second);
+                const actualMs = Date.UTC(wallYear, wallMonth - 1, wallDay, wallHour, wallMinute, wallSecond);
+                const diff = desiredMs - actualMs;
+                
+                if (diff === 0) break; // Perfect match found
+                
+                // Adjust our UTC guess by the difference
+                guessUtc = new Date(guessUtc.getTime() + diff);
+            }
+            
+            return guessUtc;
+        }
+    // --- BEGIN PASTE BASE64 STRING BELOW THIS LINE --- This just allows us to see the RPL logo offline. 
+    var logoBase64 = "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";
+    // --- END PASTE BASE64 STRING ABOVE THIS LINE ---
+    // document.getElementById('rplLogo').src = "data:image/jpeg;base64," + logoBase64; // Removed: no such element
+    const timezoneSelect = document.getElementById('timezone');
+    const utcClock = document.getElementById('utcClock');
+    const localClock = document.getElementById('localClock');
+    const targetUtcInput = document.getElementById('targetUtcInput');
+    const targetLocalInput = document.getElementById('targetLocalInput');
+    const utcToTarget = document.getElementById('utcToTarget');
+
+    // Helper: pad to 2 digits
+    function pad(n) { return n < 10 ? '0' + n : n; }
+
+    // Format date to yyyy-MM-ddTHH:mm:ss for input[type=datetime-local]
+    function toInputValue(date) {
+        return date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate()) + 'T' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+    }
+
+    // Parse input[type=datetime-local] value as Date (assume local time)
+    function parseInputValue(val) {
+        if (!val) return null;
+        // Safari on iOS may not support seconds, so add :00 if missing
+        if (val.length === 16) val += ':00';
+        return new Date(val);
+    }
+
+    // Get local time in selected timezone as Date
+    function getLocalTime(now, tz) {
+        // Get the time in the selected timezone as a string, then parse back to Date
+        const parts = now.toLocaleString('en-GB', {
+            timeZone: tz,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        }).replace(',', '').split(/\D+/);
+        // parts: [dd, mm, yyyy, HH, MM, SS]
+        return new Date(parts[2], parts[1]-1, parts[0], parts[3], parts[4], parts[5]);
+    }
+
+    // Format for display
+    function formatDisplay(date) {
+        if (!date) return '';
+        return date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate()) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+    }
+
+    // Format time difference as HH:mm:ss
+    function formatDiff(ms) {
+        if (ms == null) return '';
+        const sign = ms < 0 ? '-' : '';
+        ms = Math.abs(ms);
+        const h = Math.floor(ms / 3600000);
+        const m = Math.floor((ms % 3600000) / 60000);
+        const s = Math.floor((ms % 60000) / 1000);
+        return sign + pad(h) + ':' + pad(m) + ':' + pad(s);
+    }
+            // Set main logo and favicon from Base64
+            document.addEventListener('DOMContentLoaded', function() {
+                var mainLogo = document.getElementById('mainLogo');
+                mainLogo.src = "data:image/jpeg;base64," + logoBase64;
+                // Set favicon
+                var favicon = document.getElementById('faviconLink');
+                favicon.href = "data:image/jpeg;base64," + logoBase64;
+            });
+
+            // (Legacy: keep for compatibility if needed)
+            // document.getElementById('rplLogo').src = "data:image/jpeg;base64," + logoBase64;
+
+
+    // Store last target times
+    let lastTargetUtc = null;
+    let lastTargetLocal = null;
+
+    // When user enters a target time, keep it static until changed
+
+    // When user enters a UTC target, update local target
+    targetUtcInput.addEventListener('change', function() {
+        if (targetUtcInput.value) {
+            // Always parse as UTC
+            lastTargetUtc = new Date(targetUtcInput.value + 'Z');
+            // Convert UTC to local in selected timezone
+            const utcDate = new Date(targetUtcInput.value + 'Z');
+            const tz = timezoneSelect.value;
+            // Get local time in selected timezone for this UTC
+            const localStr = utcDate.toLocaleString('sv-SE', {
+                timeZone: tz,
+                hour12: false,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            }).replace(' ', 'T');
+            targetLocalInput.value = localStr.length === 16 ? localStr + ':00' : localStr;
+            lastTargetLocal = parseInputValue(targetLocalInput.value);
+        } else {
+            lastTargetUtc = null;
+            targetLocalInput.value = '';
+            lastTargetLocal = null;
+        }
+    });
+
+    // When user enters a local target, update UTC target
+    targetLocalInput.addEventListener('change', function() {
+        if (targetLocalInput.value) {
+            lastTargetLocal = parseInputValue(targetLocalInput.value);
+            const tz = timezoneSelect.value;
+            // Use helper to get UTC instant for wall time in selected timezone
+            const utcDate = wallTimeInTimezoneToUTC(targetLocalInput.value, tz);
+            targetUtcInput.value = toInputValue(utcDate);
+            lastTargetUtc = utcDate;
+        } else {
+            lastTargetLocal = null;
+            targetUtcInput.value = '';
+            lastTargetUtc = null;
+        }
+    });
+
+    timezoneSelect.addEventListener('change', function() {
+        // When timezone changes, update local target input to match UTC target
+        if (targetUtcInput.value) {
+            const utcDate = new Date(targetUtcInput.value + 'Z');
+            const tz = timezoneSelect.value;
+            const localStr = utcDate.toLocaleString('sv-SE', {
+                timeZone: tz,
+                hour12: false,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            }).replace(' ', 'T');
+            targetLocalInput.value = localStr.length === 16 ? localStr + ':00' : localStr;
+            lastTargetLocal = parseInputValue(targetLocalInput.value);
+        }
+        updateClocks();
+    });
+
+    function updateClocks() {
+        const now = new Date();
+        // UTC time (always true UTC)
+        const nowUtc = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+        utcClock.textContent = formatDisplay(nowUtc);
+        // Local time in selected timezone
+        const tz = timezoneSelect.value;
+        let localTime;
+        try {
+            localTime = getLocalTime(now, tz);
+            localClock.textContent = formatDisplay(localTime);
+        } catch (e) {
+            localClock.textContent = 'Invalid timezone';
+            localTime = null;
+        }
+        // Target UTC
+        let targetUtc = lastTargetUtc;
+        // Target Local
+        let targetLocal = lastTargetLocal;
+
+        // Single Time to Target countdown, always to the UTC target
+        if (lastTargetUtc) {
+            utcToTarget.textContent = formatDiff(lastTargetUtc.getTime() - nowUtc.getTime());
+        } else {
+            utcToTarget.textContent = '';
+        }
+    }
+
+    setInterval(updateClocks, 1000);
+    // Initial call to show clocks immediately
+    updateClocks();
+</script>
+</body>
+</html>

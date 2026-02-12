@@ -16,15 +16,3 @@ A lightweight, offline-capable UTC time calculator built for in-flight use. Desi
 
 Open `index.html` in any modern web browser. No build step, server, or internet connection needed.
 
-## Project Structure
-
-```
-index.html              Main application
-README.md               This file
-New Requirements.txt    Customer requirements
-Reference Docs/         Original reference code
-```
-
-## License
-
-Internal use only — RPL.

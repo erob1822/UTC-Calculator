@@ -20,12 +20,25 @@
 
         :root {
             --rpl-font: "Bahnschrift", "Segoe UI", Arial, sans-serif;
+            --bg: #242d56;
+            --bg-deep: #1a2140;
+            --panel: #16213e;
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --text: #e6ebff;
+            --muted: #c6d1f0;
+            --accent: #2d8cff;
+            --accent-strong: #1565c0;
+            --success: #66bb6a;
+            --danger: #d32f2f;
         }
 
         body {
             font-family: var(--rpl-font);
-            background: #242d56;
-            color: #e0e0e0;
+            background:
+                radial-gradient(1200px 600px at 15% -10%, rgba(64, 85, 160, 0.35), transparent 60%),
+                radial-gradient(900px 500px at 95% 10%, rgba(21, 101, 192, 0.35), transparent 55%),
+                linear-gradient(180deg, #1b2446 0%, var(--bg) 55%, var(--bg-deep) 100%);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -37,7 +50,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 18px 0 10px;
+            padding: 20px 0 12px;
+            gap: 6px;
         }
 
         #mainLogo {
@@ -56,23 +70,26 @@
             background: rgba(0, 0, 0, 0.35);
             padding: 6px 18px;
             border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
         }
 
         /* ── Container ── */
         .container {
             width: 100%;
-            max-width: 520px;
-            padding: 0 14px 30px;
+            max-width: 560px;
+            padding: 6px 16px 32px;
         }
 
         /* ── UTC Clock Section ── */
         .utc-clock-section {
-            background: #16213e;
-            border-radius: 12px;
-            padding: 18px 14px 14px;
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 20px 16px 16px;
             margin-bottom: 16px;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,.4);
+            box-shadow: 0 10px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03);
         }
 
         .utc-label {
@@ -90,6 +107,7 @@
             color: #ffffff;
             letter-spacing: 2px;
             line-height: 1.15;
+            text-shadow: 0 3px 12px rgba(0, 0, 0, 0.45);
         }
 
         /* ── Calibration Row ── */
@@ -97,8 +115,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            margin-top: 12px;
+            gap: 8px;
+            margin-top: 14px;
             flex-wrap: wrap;
         }
 
@@ -107,12 +125,14 @@
             text-align: center;
             text-align-last: center;
             font-size: 1.8em;
-            padding: 4px 0;
-            border: 1px solid #3a506b;
-            border-radius: 6px;
+            padding: 6px 0;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
             background: #0f3460;
             color: #fff;
             cursor: pointer;
+            min-height: 44px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,.35);
         }
 
         .cal-sep {
@@ -122,49 +142,53 @@
         }
 
         .btn-set {
-            padding: 7px 12px;
+            padding: 10px 14px;
             font-size: 1.2em;
             font-weight: 600;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            background: #1565c0;
+            background: var(--accent-strong);
             color: #fff;
             margin-left: 4px;
-            transition: background .2s;
+            transition: background .2s, transform .15s, box-shadow .2s;
             align-self: flex-start;
+            min-height: 44px;
+            box-shadow: 0 6px 16px rgba(13, 71, 161, 0.35);
         }
         .btn-set:hover { background: #1976d2; }
-        .btn-set:active { background: #0d47a1; }
+        .btn-set:active { background: #0d47a1; transform: translateY(1px); }
 
         .btn-revert {
-            padding: 7px 10px;
+            padding: 10px 12px;
             font-size: 1.2em;
             font-weight: 600;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             background: #546e7a;
             color: #fff;
-            transition: background .2s;
+            transition: background .2s, transform .15s;
             align-self: flex-start;
+            min-height: 44px;
         }
         .btn-revert:hover { background: #607d8b; }
-        .btn-revert:active { background: #455a64; }
+        .btn-revert:active { background: #455a64; transform: translateY(1px); }
 
         .calibration-note {
             font-size: 1.05em;
-            color: #ffffff;
+            color: var(--muted);
             margin-top: 6px;
             text-align: center;
         }
 
         /* ── Calculator Body ── */
         .calc-section {
-            background: #16213e;
-            border-radius: 12px;
-            padding: 16px 14px;
-            box-shadow: 0 2px 10px rgba(0,0,0,.4);
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 18px 16px;
+            box-shadow: 0 10px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03);
         }
 
         .section-label {
@@ -180,8 +204,9 @@
         .time-input-row {
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-bottom: 10px;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 12px;
             flex-wrap: nowrap;
         }
 
@@ -190,12 +215,14 @@
             text-align: center;
             text-align-last: center;
             font-size: 1.8em;
-            padding: 4px 0;
-            border: 1px solid #3a506b;
-            border-radius: 6px;
+            padding: 6px 0;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
             background: #0f3460;
             color: #fff;
             cursor: pointer;
+            min-height: 44px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,.35);
         }
 
         .time-sep {
@@ -208,9 +235,9 @@
         .sign-select {
             font-size: 1.8em;
             font-weight: 700;
-            padding: 5px 6px;
-            border-radius: 6px;
-            border: 1px solid #3a506b;
+            padding: 6px 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
             background: #0f3460;
             color: #fff;
             cursor: pointer;
@@ -218,43 +245,47 @@
             min-width: 46px;
             align-self: flex-start;
             margin-top: 1px;
+            min-height: 44px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,.35);
         }
 
         /* ── Modifier Row ── */
         .modifier-row {
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-bottom: 8px;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
             flex-wrap: nowrap;
         }
 
         .modifier-label {
-            font-size: .85em;
-            color: #ffffff;
+            font-size: .9em;
+            color: var(--muted);
             min-width: 72px;
         }
 
         .btn-add-modifier {
-            padding: 8px 18px;
+            padding: 10px 18px;
             font-size: 1.2em;
             font-weight: 600;
-            border: 1px dashed #3a506b;
-            border-radius: 6px;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
             cursor: pointer;
             background: transparent;
             color: #ffffff;
             margin-top: 4px;
-            transition: background .2s;
+            transition: background .2s, transform .15s, border-color .2s;
+            min-height: 44px;
         }
-        .btn-add-modifier:hover { background: #0f3460; }
+        .btn-add-modifier:hover { background: #0f3460; border-color: rgba(255, 255, 255, 0.35); }
 
         .btn-remove-modifier {
-            padding: 5px 10px;
+            padding: 8px 12px;
             font-size: 1.1em;
             font-weight: 700;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             background: #b71c1c;
             color: #fff;
@@ -262,14 +293,15 @@
             transition: background .2s;
             align-self: flex-start;
             margin-top: 3px;
+            min-height: 40px;
         }
         .btn-remove-modifier:hover { background: #d32f2f; }
 
         /* ── Divider ── */
         .divider {
             border: none;
-            border-top: 1px solid #3a506b;
-            margin: 14px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            margin: 16px 0;
         }
 
         /* ── Result ── */
@@ -279,7 +311,7 @@
 
         .result-label {
             font-size: 1.4em;
-            color: #ffffff;
+            color: var(--muted);
             font-weight: 600;
             margin-bottom: 4px;
         }
@@ -288,26 +320,29 @@
             font-size: 3.8em;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
-            color: #66bb6a;
+            color: var(--success);
             letter-spacing: 2px;
             line-height: 1.2;
+            text-shadow: 0 2px 10px rgba(18, 57, 21, 0.35);
         }
 
         .met-display {
             font-size: 3.8em;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
-            color: #66bb6a;
+            color: var(--success);
             letter-spacing: 2px;
             line-height: 1.2;
+            text-shadow: 0 2px 10px rgba(18, 57, 21, 0.35);
         }
 
         .mission-section {
-            background: #16213e;
-            border-radius: 12px;
-            padding: 16px 14px;
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 18px 16px;
             margin-top: 16px;
-            box-shadow: 0 2px 10px rgba(0,0,0,.4);
+            box-shadow: 0 10px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03);
         }
 
         .mission-field {
@@ -320,7 +355,7 @@
 
         .met-snapshot {
             font-size: 0.95em;
-            color: #66bb6a;
+            color: var(--success);
             margin-top: 4px;
             font-weight: 600;
             letter-spacing: 0.5px;
@@ -331,17 +366,40 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-width: 72px;
         }
 
         .input-label {
-            font-size: .85em;
-            color: #ffffff;
+            font-size: .9em;
+            color: var(--muted);
             margin-top: 2px;
             letter-spacing: .5px;
             text-transform: uppercase;
         }
 
+        .cal-input:hover,
+        .time-input:hover,
+        .sign-select:hover {
+            border-color: rgba(255, 255, 255, 0.28);
+        }
+
+        button:focus-visible,
+        select:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+            box-shadow: 0 0 0 3px rgba(45, 140, 255, 0.35);
+        }
+
         /* ── Responsive tweaks ── */
+        @media (max-width: 520px) {
+            .calibration-row,
+            .time-input-row,
+            .modifier-row {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
         @media (max-width: 400px) {
             #utcClock { font-size: 3.4em; }
             #resultTime { font-size: 3em; }

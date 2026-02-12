@@ -30,6 +30,7 @@
             --accent-strong: #1565c0;
             --success: #66bb6a;
             --danger: #d32f2f;
+            --time-sep-offset: -12px;
         }
 
         html,
@@ -237,7 +238,7 @@
             display: flex;
             align-items: center;
             height: 44px;
-            transform: translateY(-12px);
+            transform: translateY(var(--time-sep-offset));
         }
 
         /* ── +/- selector ── */

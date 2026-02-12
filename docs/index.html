@@ -249,7 +249,7 @@
             background: #0f3460;
             color: #fff;
             cursor: pointer;
-            text-align: left;
+            text-align: center;
             min-width: 46px;
             align-self: flex-start;
             margin-top: 1px;
@@ -261,10 +261,19 @@
         .modifier-row {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 4px;
+            justify-content: space-between;
+            gap: 8px;
             margin-bottom: 10px;
             flex-wrap: nowrap;
+            width: 100%;
+        }
+
+        .modifier-row .modifier-inputs {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            flex: 1 1 auto;
         }
 
         .modifier-row .time-input {
@@ -1037,19 +1046,21 @@
                     '<option value="1">+</option>' +
                     '<option value="-1">&minus;</option>' +
                 '</select>' +
-                '<div class="input-group">' +
-                    '<select class="time-input mod-h" aria-label="Modifier Hours"></select>' +
-                    '<span class="input-label">Hours</span>' +
-                '</div>' +
-                '<span class="time-sep">:</span>' +
-                '<div class="input-group">' +
-                    '<select class="time-input mod-m" aria-label="Modifier Minutes"></select>' +
-                    '<span class="input-label">Min</span>' +
-                '</div>' +
-                '<span class="time-sep">:</span>' +
-                '<div class="input-group">' +
-                    '<select class="time-input mod-s" aria-label="Modifier Seconds"></select>' +
-                    '<span class="input-label">Sec</span>' +
+                '<div class="modifier-inputs">' +
+                    '<div class="input-group">' +
+                        '<select class="time-input mod-h" aria-label="Modifier Hours"></select>' +
+                        '<span class="input-label">Hours</span>' +
+                    '</div>' +
+                    '<span class="time-sep">:</span>' +
+                    '<div class="input-group">' +
+                        '<select class="time-input mod-m" aria-label="Modifier Minutes"></select>' +
+                        '<span class="input-label">Min</span>' +
+                    '</div>' +
+                    '<span class="time-sep">:</span>' +
+                    '<div class="input-group">' +
+                        '<select class="time-input mod-s" aria-label="Modifier Seconds"></select>' +
+                        '<span class="input-label">Sec</span>' +
+                    '</div>' +
                 '</div>' +
                 '<button class="btn-remove-modifier" title="Remove modifier">&times;</button>';
 

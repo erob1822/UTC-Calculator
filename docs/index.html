@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: #1a1a2e;
+            background: #242d56;
             color: #e0e0e0;
             min-height: 100vh;
             display: flex;
@@ -90,15 +90,16 @@
         }
 
         .cal-input {
-            width: 56px;
+            width: 64px;
             text-align: center;
-            font-size: 1.3em;
-            padding: 6px 2px;
+            text-align-last: center;
+            font-size: 2em;
+            padding: 4px 0;
             border: 1px solid #3a506b;
             border-radius: 6px;
             background: #0f3460;
             color: #fff;
-            font-variant-numeric: tabular-nums;
+            cursor: pointer;
         }
 
         .cal-sep {
@@ -171,15 +172,16 @@
         }
 
         .time-input {
-            width: 52px;
+            width: 64px;
             text-align: center;
-            font-size: 1.3em;
-            padding: 7px 2px;
+            text-align-last: center;
+            font-size: 2em;
+            padding: 4px 0;
             border: 1px solid #3a506b;
             border-radius: 6px;
             background: #0f3460;
             color: #fff;
-            font-variant-numeric: tabular-nums;
+            cursor: pointer;
         }
 
         .time-sep {
@@ -190,7 +192,7 @@
 
         /* ── +/- selector ── */
         .sign-select {
-            font-size: 1.45em;
+            font-size: 2em;
             font-weight: 700;
             padding: 5px 6px;
             border-radius: 6px;
@@ -292,16 +294,12 @@
             text-transform: uppercase;
         }
 
-        /* Keep inputs from zooming on iOS */
-        input, select {
-            font-size: 16px;
-        }
-
         /* ── Responsive tweaks ── */
         @media (max-width: 400px) {
             #utcClock { font-size: 3.4em; }
             #resultTime { font-size: 3em; }
-            .cal-input, .time-input { width: 50px; font-size: 1.2em; }
+            .cal-input, .time-input { width: 58px; font-size: 1.7em; }
+            .sign-select { font-size: 1.7em; }
             .section-label, .result-label { font-size: 1.25em; }
             .header-title { font-size: 1.9em; }
         }
@@ -324,17 +322,17 @@
 
         <div class="calibration-row">
             <div class="input-group">
-                <input type="number" id="calHour" class="cal-input" min="0" max="23" value="0" aria-label="Hour">
+                <select id="calHour" class="cal-input" aria-label="Hour"></select>
                 <span class="input-label">Hours</span>
             </div>
             <span class="cal-sep">:</span>
             <div class="input-group">
-                <input type="number" id="calMin" class="cal-input" min="0" max="59" value="0" aria-label="Minute">
+                <select id="calMin" class="cal-input" aria-label="Minute"></select>
                 <span class="input-label">Min</span>
             </div>
             <span class="cal-sep">:</span>
             <div class="input-group">
-                <input type="number" id="calSec" class="cal-input" min="0" max="59" value="0" aria-label="Second">
+                <select id="calSec" class="cal-input" aria-label="Second"></select>
                 <span class="input-label">Sec</span>
             </div>
             <button class="btn-set" id="btnSet">Set</button>
@@ -349,17 +347,17 @@
         <div class="section-label">Starting UTC Time</div>
         <div class="time-input-row">
             <div class="input-group">
-                <input type="number" id="startHour" class="time-input" min="0" max="23" value="0" aria-label="Start Hour">
+                <select id="startHour" class="time-input" aria-label="Start Hour"></select>
                 <span class="input-label">Hours</span>
             </div>
             <span class="time-sep">:</span>
             <div class="input-group">
-                <input type="number" id="startMin" class="time-input" min="0" max="59" value="0" aria-label="Start Minute">
+                <select id="startMin" class="time-input" aria-label="Start Minute"></select>
                 <span class="input-label">Min</span>
             </div>
             <span class="time-sep">:</span>
             <div class="input-group">
-                <input type="number" id="startSec" class="time-input" min="0" max="59" value="0" aria-label="Start Second">
+                <select id="startSec" class="time-input" aria-label="Start Second"></select>
                 <span class="input-label">Sec</span>
             </div>
             <button class="btn-set" id="btnNoteCurrent">Note Current</button>
@@ -696,6 +694,22 @@
             return pad(h) + ':' + pad(m) + ':' + pad(s);
         }
 
+        // ─── Populate Select Dropdowns ───
+        function populateSelect(el, min, max) {
+            for (var i = min; i <= max; i++) {
+                var opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = pad(i);
+                el.appendChild(opt);
+            }
+        }
+        populateSelect(calHourEl, 0, 23);
+        populateSelect(calMinEl, 0, 59);
+        populateSelect(calSecEl, 0, 59);
+        populateSelect(startHourEl, 0, 23);
+        populateSelect(startMinEl, 0, 59);
+        populateSelect(startSecEl, 0, 59);
+
         // ─── Live UTC Clock ───
         function tickClock() {
             var utc = getCalibratedUTC();
@@ -749,20 +763,25 @@
                     '<option value="-1">&minus;</option>' +
                 '</select>' +
                 '<div class="input-group">' +
-                    '<input type="number" class="time-input mod-h" min="0" max="99" value="0" aria-label="Modifier Hours">' +
+                    '<select class="time-input mod-h" aria-label="Modifier Hours"></select>' +
                     '<span class="input-label">Hours</span>' +
                 '</div>' +
                 '<span class="time-sep">:</span>' +
                 '<div class="input-group">' +
-                    '<input type="number" class="time-input mod-m" min="0" max="59" value="0" aria-label="Modifier Minutes">' +
+                    '<select class="time-input mod-m" aria-label="Modifier Minutes"></select>' +
                     '<span class="input-label">Min</span>' +
                 '</div>' +
                 '<span class="time-sep">:</span>' +
                 '<div class="input-group">' +
-                    '<input type="number" class="time-input mod-s" min="0" max="59" value="0" aria-label="Modifier Seconds">' +
+                    '<select class="time-input mod-s" aria-label="Modifier Seconds"></select>' +
                     '<span class="input-label">Sec</span>' +
                 '</div>' +
                 '<button class="btn-remove-modifier" title="Remove modifier">&times;</button>';
+
+            // Populate modifier selects
+            populateSelect(row.querySelector('.mod-h'), 0, 99);
+            populateSelect(row.querySelector('.mod-m'), 0, 59);
+            populateSelect(row.querySelector('.mod-s'), 0, 59);
 
             // Wire remove button
             row.querySelector('.btn-remove-modifier').addEventListener('click', function () {
@@ -771,10 +790,9 @@
             });
 
             // Live update on any change
-            var inputs = row.querySelectorAll('input, select');
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].addEventListener('input', computeResult);
-                inputs[i].addEventListener('change', computeResult);
+            var selects = row.querySelectorAll('select');
+            for (var i = 0; i < selects.length; i++) {
+                selects[i].addEventListener('change', computeResult);
             }
 
             modContEl.appendChild(row);
@@ -803,10 +821,7 @@
             resultEl.textContent = wrap24(totalSec);
         }
 
-        // Live update on starting-time inputs
-        startHourEl.addEventListener('input', computeResult);
-        startMinEl.addEventListener('input',  computeResult);
-        startSecEl.addEventListener('input',  computeResult);
+        // Live update on starting-time selects
         startHourEl.addEventListener('change', computeResult);
         startMinEl.addEventListener('change',  computeResult);
         startSecEl.addEventListener('change',  computeResult);

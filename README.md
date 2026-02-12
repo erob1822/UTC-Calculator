@@ -16,3 +16,5 @@ A lightweight, offline-capable UTC time calculator built for in-flight use. Desi
 
 Open `index.html` in any modern web browser. No build step, server, or internet connection needed.
 
+Or: this program is live at https://erob1822.github.io/UTC-Calculator/
+

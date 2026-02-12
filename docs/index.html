@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>UTC Calculator</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="UTC Calc">
+    <meta name="theme-color" content="#242d56">
+    <link id="appleTouchIcon" rel="apple-touch-icon">
     <link id="faviconLink" rel="icon" type="image/jpeg">
     <style>
         * {
@@ -93,7 +99,7 @@
             width: 64px;
             text-align: center;
             text-align-last: center;
-            font-size: 2em;
+            font-size: 1.8em;
             padding: 4px 0;
             border: 1px solid #3a506b;
             border-radius: 6px;
@@ -175,7 +181,7 @@
             width: 64px;
             text-align: center;
             text-align-last: center;
-            font-size: 2em;
+            font-size: 1.8em;
             padding: 4px 0;
             border: 1px solid #3a506b;
             border-radius: 6px;
@@ -192,7 +198,7 @@
 
         /* ── +/- selector ── */
         .sign-select {
-            font-size: 2em;
+            font-size: 1.8em;
             font-weight: 700;
             padding: 5px 6px;
             border-radius: 6px;
@@ -298,8 +304,8 @@
         @media (max-width: 400px) {
             #utcClock { font-size: 3.4em; }
             #resultTime { font-size: 3em; }
-            .cal-input, .time-input { width: 58px; font-size: 1.7em; }
-            .sign-select { font-size: 1.7em; }
+            .cal-input, .time-input { width: 58px; font-size: 1.5em; }
+            .sign-select { font-size: 1.5em; }
             .section-label, .result-label { font-size: 1.25em; }
             .header-title { font-size: 1.9em; }
         }
@@ -645,11 +651,14 @@
 "X5w0Uf2Wv5/wD277H6Bf8FFPg34R8TRv8T/Buu6LcavCFj1nT7S+hZ7mMcLcKobJdRgMB1UA/wAJz+ftFFepRpujBQbvYwlLmdwoooroJP/Z";
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Set logo + favicon
+        // Set logo, favicon, and apple-touch-icon from single base64 source
+        var logoDataUrl = "data:image/jpeg;base64," + logoBase64;
         var img = document.getElementById('mainLogo');
-        img.src = "data:image/jpeg;base64," + logoBase64;
+        img.src = logoDataUrl;
         var fav = document.getElementById('faviconLink');
-        fav.href = "data:image/jpeg;base64," + logoBase64;
+        fav.href = logoDataUrl;
+        var appleIcon = document.getElementById('appleTouchIcon');
+        appleIcon.href = logoDataUrl;
 
         // ─── State ───
         var offsetMs = 0;           // calibration offset in ms
@@ -832,6 +841,12 @@
         setInterval(tickClock, 1000);
         computeResult();
     });
+</script>
+<script>
+    // Register Service Worker for offline support
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js');
+    }
 </script>
 </body>
 </html>

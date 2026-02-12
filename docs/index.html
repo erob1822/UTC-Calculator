@@ -425,7 +425,7 @@
 
         <!-- Mission Start Time -->
         <div class="mission-field">
-            <div class="section-label">Mission Start Time</div>
+            <div class="section-label">Expected Parachute Deploy (Eagle)</div>
             <div class="time-input-row">
                 <div class="input-group">
                     <select id="missionStartHour" class="time-input" aria-label="Mission Start Hour"></select>
@@ -1040,20 +1040,46 @@
 
         var missionStartSet = false;
 
-        // Mark mission start as set when user changes any mission start select
+        // Auto-set Dry Pass 1 (Eagle - 30 min), Dry Pass 2 (Eagle - 15 min), Hot Pass (= Eagle)
+        function autoSetPasses() {
+            var eagleH = clamp(mStartHourEl.value, 0, 23);
+            var eagleM = clamp(mStartMinEl.value, 0, 59);
+            var eagleS = clamp(mStartSecEl.value, 0, 59);
+            var eagleSec = eagleH * 3600 + eagleM * 60 + eagleS;
+
+            // Dry Pass 1: Eagle - 30 minutes
+            var dp1Sec = ((eagleSec - 1800) % 86400 + 86400) % 86400;
+            dry1HourEl.value = Math.floor(dp1Sec / 3600);
+            dry1MinEl.value = Math.floor((dp1Sec % 3600) / 60);
+            dry1SecEl.value = dp1Sec % 60;
+            updateMETSnap(dry1HourEl, dry1MinEl, dry1SecEl, 'metSnapDP1');
+
+            // Dry Pass 2: Eagle - 15 minutes
+            var dp2Sec = ((eagleSec - 900) % 86400 + 86400) % 86400;
+            dry2HourEl.value = Math.floor(dp2Sec / 3600);
+            dry2MinEl.value = Math.floor((dp2Sec % 3600) / 60);
+            dry2SecEl.value = dp2Sec % 60;
+            updateMETSnap(dry2HourEl, dry2MinEl, dry2SecEl, 'metSnapDP2');
+
+            // Hot Pass: same as Eagle
+            hotHourEl.value = eagleH;
+            hotMinEl.value = eagleM;
+            hotSecEl.value = eagleS;
+            updateMETSnap(hotHourEl, hotMinEl, hotSecEl, 'metSnapHP');
+        }
+
+        // Mark Eagle as set when user changes any Eagle select & auto-set passes
         ['missionStartHour','missionStartMin','missionStartSec'].forEach(function(id) {
             document.getElementById(id).addEventListener('change', function () {
                 missionStartSet = true;
+                autoSetPasses();
             });
         });
 
         document.getElementById('btnNoteMissionStart').addEventListener('click', function () {
             missionStartSet = true;
             noteCurrentTo(mStartHourEl, mStartMinEl, mStartSecEl);
-            // Recompute all existing snapshots when mission start changes
-            if (document.getElementById('metSnapDP1').textContent) updateMETSnap(dry1HourEl, dry1MinEl, dry1SecEl, 'metSnapDP1');
-            if (document.getElementById('metSnapDP2').textContent) updateMETSnap(dry2HourEl, dry2MinEl, dry2SecEl, 'metSnapDP2');
-            if (document.getElementById('metSnapHP').textContent) updateMETSnap(hotHourEl, hotMinEl, hotSecEl, 'metSnapHP');
+            autoSetPasses();
         });
         document.getElementById('btnNoteDryPass1').addEventListener('click', function () {
             noteCurrentTo(dry1HourEl, dry1MinEl, dry1SecEl);

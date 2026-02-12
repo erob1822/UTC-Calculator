@@ -285,6 +285,31 @@
             line-height: 1.2;
         }
 
+        .met-display {
+            font-size: 3.8em;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: #66bb6a;
+            letter-spacing: 2px;
+            line-height: 1.2;
+        }
+
+        .mission-section {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 16px 14px;
+            margin-top: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.4);
+        }
+
+        .mission-field {
+            margin-bottom: 14px;
+        }
+
+        .mission-field .section-label {
+            margin-bottom: 6px;
+        }
+
         /* ── Labeled input group ── */
         .input-group {
             display: flex;
@@ -316,7 +341,6 @@
 <!-- Header -->
 <div class="header">
     <img id="mainLogo" alt="RPL Logo">
-    <div class="header-title">UTC Calculator</div>
 </div>
 
 <div class="container">
@@ -349,6 +373,7 @@
 
     <!-- ═══════ Calculator Body ═══════ -->
     <div class="calc-section">
+        <div class="header-title" style="text-align:center; margin-bottom:12px;">UTC Calculator</div>
         <!-- Starting UTC Time -->
         <div class="section-label">Starting UTC Time</div>
         <div class="time-input-row">
@@ -366,7 +391,7 @@
                 <select id="startSec" class="time-input" aria-label="Start Second"></select>
                 <span class="input-label">Sec</span>
             </div>
-            <button class="btn-set" id="btnNoteCurrent">Note Current</button>
+            <button class="btn-set" id="btnNoteCurrent">Set Current</button>
         </div>
 
         <!-- Modifiers -->
@@ -382,9 +407,108 @@
             <div id="resultTime">00:00:00</div>
         </div>
     </div>
-</div>
 
-<script>
+    <!-- ═══════ Mission Timing ═══════ -->
+    <div class="mission-section">
+        <div class="header-title" style="text-align:center; margin-bottom:12px;">Mission Timing</div>
+
+        <!-- Mission Start Time -->
+        <div class="mission-field">
+            <div class="section-label">Mission Start Time</div>
+            <div class="time-input-row">
+                <div class="input-group">
+                    <select id="missionStartHour" class="time-input" aria-label="Mission Start Hour"></select>
+                    <span class="input-label">Hours</span>
+                </div>
+                <span class="time-sep">:</span>
+                <div class="input-group">
+                    <select id="missionStartMin" class="time-input" aria-label="Mission Start Minute"></select>
+                    <span class="input-label">Min</span>
+                </div>
+                <span class="time-sep">:</span>
+                <div class="input-group">
+                    <select id="missionStartSec" class="time-input" aria-label="Mission Start Second"></select>
+                    <span class="input-label">Sec</span>
+                </div>
+                <button class="btn-set" id="btnNoteMissionStart">Set Current</button>
+            </div>
+        </div>
+
+        <!-- Dry Pass 1 -->
+        <div class="mission-field">
+            <div class="section-label">Dry Pass 1</div>
+            <div class="time-input-row">
+                <div class="input-group">
+                    <select id="dryPass1Hour" class="time-input" aria-label="Dry Pass 1 Hour"></select>
+                    <span class="input-label">Hours</span>
+                </div>
+                <span class="time-sep">:</span>
+                <div class="input-group">
+                    <select id="dryPass1Min" class="time-input" aria-label="Dry Pass 1 Minute"></select>
+                    <span class="input-label">Min</span>
+                </div>
+                <span class="time-sep">:</span>
+                <div class="input-group">
+                    <select id="dryPass1Sec" class="time-input" aria-label="Dry Pass 1 Second"></select>
+                    <span class="input-label">Sec</span>
+                </div>
+                <button class="btn-set" id="btnNoteDryPass1">Set Current</button>
+            </div>
+        </div>
+
+        <!-- Dry Pass 2 -->
+        <div class="mission-field">
+            <div class="section-label">Dry Pass 2</div>
+            <div class="time-input-row">
+                <div class="input-group">
+                    <select id="dryPass2Hour" class="time-input" aria-label="Dry Pass 2 Hour"></select>
+                    <span class="input-label">Hours</span>
+                </div>
+                <span class="time-sep">:</span>
+                <div class="input-group">
+                    <select id="dryPass2Min" class="time-input" aria-label="Dry Pass 2 Minute"></select>
+                    <span class="input-label">Min</span>
+                </div>
+                <span class="time-sep">:</span>
+                <div class="input-group">
+                    <select id="dryPass2Sec" class="time-input" aria-label="Dry Pass 2 Second"></select>
+                    <span class="input-label">Sec</span>
+                </div>
+                <button class="btn-set" id="btnNoteDryPass2">Set Current</button>
+            </div>
+        </div>
+
+        <!-- Hot Pass -->
+        <div class="mission-field">
+            <div class="section-label">Hot Pass</div>
+            <div class="time-input-row">
+                <div class="input-group">
+                    <select id="hotPassHour" class="time-input" aria-label="Hot Pass Hour"></select>
+                    <span class="input-label">Hours</span>
+                </div>
+                <span class="time-sep">:</span>
+                <div class="input-group">
+                    <select id="hotPassMin" class="time-input" aria-label="Hot Pass Minute"></select>
+                    <span class="input-label">Min</span>
+                </div>
+                <span class="time-sep">:</span>
+                <div class="input-group">
+                    <select id="hotPassSec" class="time-input" aria-label="Hot Pass Second"></select>
+                    <span class="input-label">Sec</span>
+                </div>
+                <button class="btn-set" id="btnNoteHotPass">Set Current</button>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- MET Display -->
+        <div class="result-section">
+            <div class="result-label">Mission Elapsed Time (MET)</div>
+            <div id="metDisplay" class="met-display">+00:00:00</div>
+        </div>
+    </div>
+</div>
     // ─────────────────────────────────────────────
     //  RPL Logo – Base64 embedded for offline use
     // ─────────────────────────────────────────────
@@ -679,6 +803,21 @@
         var btnAddModEl  = document.getElementById('btnAddModifier');
         var resultEl     = document.getElementById('resultTime');
 
+        // Mission Timing elements
+        var mStartHourEl = document.getElementById('missionStartHour');
+        var mStartMinEl  = document.getElementById('missionStartMin');
+        var mStartSecEl  = document.getElementById('missionStartSec');
+        var dry1HourEl   = document.getElementById('dryPass1Hour');
+        var dry1MinEl    = document.getElementById('dryPass1Min');
+        var dry1SecEl    = document.getElementById('dryPass1Sec');
+        var dry2HourEl   = document.getElementById('dryPass2Hour');
+        var dry2MinEl    = document.getElementById('dryPass2Min');
+        var dry2SecEl    = document.getElementById('dryPass2Sec');
+        var hotHourEl    = document.getElementById('hotPassHour');
+        var hotMinEl     = document.getElementById('hotPassMin');
+        var hotSecEl     = document.getElementById('hotPassSec');
+        var metDisplayEl = document.getElementById('metDisplay');
+
         // ─── Helpers ───
         function pad(n) { return (n < 10 ? '0' : '') + n; }
 
@@ -718,6 +857,18 @@
         populateSelect(startHourEl, 0, 23);
         populateSelect(startMinEl, 0, 59);
         populateSelect(startSecEl, 0, 59);
+        populateSelect(mStartHourEl, 0, 23);
+        populateSelect(mStartMinEl, 0, 59);
+        populateSelect(mStartSecEl, 0, 59);
+        populateSelect(dry1HourEl, 0, 23);
+        populateSelect(dry1MinEl, 0, 59);
+        populateSelect(dry1SecEl, 0, 59);
+        populateSelect(dry2HourEl, 0, 23);
+        populateSelect(dry2MinEl, 0, 59);
+        populateSelect(dry2SecEl, 0, 59);
+        populateSelect(hotHourEl, 0, 23);
+        populateSelect(hotMinEl, 0, 59);
+        populateSelect(hotSecEl, 0, 59);
 
         // ─── Live UTC Clock ───
         function tickClock() {
@@ -835,11 +986,58 @@
         startMinEl.addEventListener('change',  computeResult);
         startSecEl.addEventListener('change',  computeResult);
 
+        // ─── Mission Timing ───
+
+        // Helper to set a trio of selects to current calibrated UTC
+        function noteCurrentTo(hEl, mEl, sEl) {
+            var utc = getCalibratedUTC();
+            hEl.value = utc.getUTCHours();
+            mEl.value = utc.getUTCMinutes();
+            sEl.value = utc.getUTCSeconds();
+        }
+
+        document.getElementById('btnNoteMissionStart').addEventListener('click', function () {
+            noteCurrentTo(mStartHourEl, mStartMinEl, mStartSecEl);
+        });
+        document.getElementById('btnNoteDryPass1').addEventListener('click', function () {
+            noteCurrentTo(dry1HourEl, dry1MinEl, dry1SecEl);
+        });
+        document.getElementById('btnNoteDryPass2').addEventListener('click', function () {
+            noteCurrentTo(dry2HourEl, dry2MinEl, dry2SecEl);
+        });
+        document.getElementById('btnNoteHotPass').addEventListener('click', function () {
+            noteCurrentTo(hotHourEl, hotMinEl, hotSecEl);
+        });
+
+        // ─── MET Computation (live every second) ───
+        function computeMET() {
+            var utc = getCalibratedUTC();
+            var nowSec = utc.getUTCHours() * 3600 + utc.getUTCMinutes() * 60 + utc.getUTCSeconds();
+            var msh = clamp(mStartHourEl.value, 0, 23);
+            var msm = clamp(mStartMinEl.value, 0, 59);
+            var mss = clamp(mStartSecEl.value, 0, 59);
+            var startSec = msh * 3600 + msm * 60 + mss;
+
+            var diff = nowSec - startSec;
+            // Handle wrap-around: if diff < -43200, add 86400 (crossed midnight forward)
+            // If diff > 43200, subtract 86400 (crossed midnight backward)
+            if (diff > 43200) diff -= 86400;
+            if (diff < -43200) diff += 86400;
+
+            var sign = diff >= 0 ? '+' : '-';
+            var absDiff = Math.abs(diff);
+            var h = Math.floor(absDiff / 3600);
+            var m = Math.floor((absDiff % 3600) / 60);
+            var s = absDiff % 60;
+            metDisplayEl.textContent = sign + pad(h) + ':' + pad(m) + ':' + pad(s);
+        }
+
         // ─── Bootstrap ───
         addModifier();          // start with one modifier row
         tickClock();
-        setInterval(tickClock, 1000);
+        setInterval(function () { tickClock(); computeMET(); }, 1000);
         computeResult();
+        computeMET();
     });
 </script>
 <script>

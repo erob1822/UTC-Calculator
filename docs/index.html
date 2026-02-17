@@ -469,7 +469,13 @@
 
     <!-- ═══════ UTC Clock + Calibration ═══════ -->
     <div class="utc-clock-section">
-        <div class="utc-label">CURRENT UTC TIME</div>
+        <div style="display: flex; align-items: center; gap: 12px; justify-content: center;">
+            <div class="utc-label" id="clockLabel">CURRENT UTC TIME</div>
+            <select id="timeModeToggle" style="font-size:1em; padding:2px 8px; border-radius:6px;">
+                <option value="zulu">Zulu (UTC)</option>
+                <option value="local">Local</option>
+            </select>
+        </div>
         <div id="utcClock">00:00:00</div>
 
         <div class="calibration-note">Calibrate UTC Below</div>
@@ -904,6 +910,26 @@
 "X5w0Uf2Wv5/wD277H6Bf8FFPg34R8TRv8T/Buu6LcavCFj1nT7S+hZ7mMcLcKobJdRgMB1UA/wAJz+ftFFepRpujBQbvYwlLmdwoooroJP/Z";
 
     document.addEventListener('DOMContentLoaded', function () {
+                // ─── Time Mode State ───
+                var timeMode = 'zulu'; // 'zulu' or 'local'
+                var timeModeToggle = document.getElementById('timeModeToggle');
+                var clockLabel = document.getElementById('clockLabel');
+
+                timeModeToggle.addEventListener('change', function() {
+                    timeMode = timeModeToggle.value;
+                    updateClockLabel();
+                    tickClock();
+                    computeMET();
+                });
+
+                function updateClockLabel() {
+                    if (timeMode === 'zulu') {
+                        clockLabel.textContent = 'CURRENT UTC TIME';
+                    } else {
+                        clockLabel.textContent = 'CURRENT LOCAL TIME';
+                    }
+                }
+                updateClockLabel();
         // Set logo, favicon, and apple-touch-icon from single base64 source
         var logoDataUrl = "data:image/jpeg;base64," + logoBase64;
         var img = document.getElementById('mainLogo');
@@ -1000,8 +1026,17 @@
 
         // ─── Live UTC Clock ───
         function tickClock() {
-            var utc = getCalibratedUTC();
-            utcClockEl.textContent = pad(utc.getUTCHours()) + ':' + pad(utc.getUTCMinutes()) + ':' + pad(utc.getUTCSeconds());
+            var now = new Date();
+            var show;
+            if (timeMode === 'zulu') {
+                var utc = getCalibratedUTC();
+                show = pad(utc.getUTCHours()) + ':' + pad(utc.getUTCMinutes()) + ':' + pad(utc.getUTCSeconds());
+            } else {
+                // Local time, apply calibration offset
+                var local = new Date(now.getTime() + offsetMs);
+                show = pad(local.getHours()) + ':' + pad(local.getMinutes()) + ':' + pad(local.getSeconds());
+            }
+            utcClockEl.textContent = show;
         }
 
         // ─── Calibration ───
@@ -1031,10 +1066,19 @@
 
         // ─── Note Current ───
         btnNoteEl.addEventListener('click', function () {
-            var utc = getCalibratedUTC();
-            startHourEl.value = utc.getUTCHours();
-            startMinEl.value  = utc.getUTCMinutes();
-            startSecEl.value  = utc.getUTCSeconds();
+            var now = new Date();
+            var t;
+            if (timeMode === 'zulu') {
+                t = getCalibratedUTC();
+                startHourEl.value = t.getUTCHours();
+                startMinEl.value  = t.getUTCMinutes();
+                startSecEl.value  = t.getUTCSeconds();
+            } else {
+                t = new Date(now.getTime() + offsetMs);
+                startHourEl.value = t.getHours();
+                startMinEl.value  = t.getMinutes();
+                startSecEl.value  = t.getSeconds();
+            }
             computeResult();
         });
 
@@ -1120,10 +1164,19 @@
 
         // Helper to set a trio of selects to current calibrated UTC
         function noteCurrentTo(hEl, mEl, sEl) {
-            var utc = getCalibratedUTC();
-            hEl.value = utc.getUTCHours();
-            mEl.value = utc.getUTCMinutes();
-            sEl.value = utc.getUTCSeconds();
+            var now = new Date();
+            var t;
+            if (timeMode === 'zulu') {
+                t = getCalibratedUTC();
+                hEl.value = t.getUTCHours();
+                mEl.value = t.getUTCMinutes();
+                sEl.value = t.getUTCSeconds();
+            } else {
+                t = new Date(now.getTime() + offsetMs);
+                hEl.value = t.getHours();
+                mEl.value = t.getMinutes();
+                sEl.value = t.getSeconds();
+            }
         }
 
         // Compute MET string for a given event time relative to mission start
@@ -1234,8 +1287,15 @@
                 metDisplayEl.textContent = '+00:00:00';
                 return;
             }
-            var utc = getCalibratedUTC();
-            var nowSec = utc.getUTCHours() * 3600 + utc.getUTCMinutes() * 60 + utc.getUTCSeconds();
+            var now = new Date();
+            var t;
+            if (timeMode === 'zulu') {
+                t = getCalibratedUTC();
+                var nowSec = t.getUTCHours() * 3600 + t.getUTCMinutes() * 60 + t.getUTCSeconds();
+            } else {
+                t = new Date(now.getTime() + offsetMs);
+                var nowSec = t.getHours() * 3600 + t.getMinutes() * 60 + t.getSeconds();
+            }
             var msh = clamp(mStartHourEl.value, 0, 23);
             var msm = clamp(mStartMinEl.value, 0, 59);
             var mss = clamp(mStartSecEl.value, 0, 59);
